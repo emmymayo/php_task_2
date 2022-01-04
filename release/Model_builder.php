@@ -3,7 +3,7 @@ require_once 'BuilderInterface.php';
 class Model_builder implements BuilderInterface{
 
     private $config;
-
+    private $content;
     public function __construct()
     {
         $this->config = json_decode(file_get_contents('configuration.json'),TRUE);
@@ -23,37 +23,49 @@ class Model_builder implements BuilderInterface{
     }
 
     protected function makeView($model){
-        $content = "";
+        $this->addFormOpeningTag($model);
         foreach ($model['field'] as $field) {
             $name = $field[0];
             $type = $field[1];
             $label = $field[2];
             $rule = $field[3];
-            $content .= $this->getLabel($label,$name);
-            $content .= $this->getInput($name,$this->getInputType($type),$this->getInputValidationRule($rule));
-
+            $this->content .= $this->addLabel($label,$name);
+            $this->content .= $this->addInput($name,$this->getInputType($type),$this->getInputValidationRule($rule));
         }
-        // make view
+        $this->content .=$this->addInput('submit', 'submit',false,true);
+        $this->addFormClosingTag();
+        $this->saveModel($model);
+    }
+
+    protected function addFormOpeningTag($model){
+        $this->content = "<form method=\"POST\" action=\"/api/{$model['name']}\" >".PHP_EOL;
+    }
+    protected function addFormClosingTag(){
+        $this->content .= "</form>".PHP_EOL;
+    }
+ 
+    protected function addLabel(string $label, string $for) :string{
+        $label = "  <label for=\"$for\"> $label </label>".PHP_EOL;
+        return $label;
+    }
+   
+    protected function addInput(string $name, string $type, bool $required = true, $submit = false) :string{
+        $required = $required? 'required' : '';
+        $submit = $submit? 'Submit' : '';
+
+        $input = "  <input name=\"{$name}\" id=\"{$name}\" type=\"{$type}\" value=\"{$submit}\" {$required} />".PHP_EOL;
+
+        return $input;
+    }
+
+    protected function saveModel($model){
         $root_path = $_SERVER['DOCUMENT_ROOT'];
         $file = "$root_path/release/views/{$model['name']}.php";
         if (!is_dir("$root_path/release/views")) {
             // dir doesn't exist, make it
             mkdir("$root_path/release/views");
           }
-        file_put_contents($file, $content);
-    }
- 
-    protected function getLabel(string $label, string $for) :string{
-        $label = "<label for=\"$for\"> $label </label>".PHP_EOL;
-        return $label;
-    }
-   
-    protected function getInput(string $name, string $type, bool $required = TRUE) :string{
-        $required = $required? 'required' : '';
-
-        $input = "<input name=\"{$name}\" id=\"{$name}\" type=\"{$type}\" {$required} />".PHP_EOL;
-
-        return $input;
+        file_put_contents($file, $this->content);
     }
 
     private function getInputType(string $value) :string{
