@@ -1,0 +1,21 @@
+{
+    "model": [
+        {
+            "name": "location",
+            "field": [
+                ["id", "integer", "ID", "required"],
+                ["name", "string", "Name", "required"],
+                ["status", "integer", "Status", "required"]
+            ]
+        },
+        {
+            "name": "user",
+            "field": [
+                ["id", "integer", "ID", "required"],
+                ["name", "string", "Name", "required"],
+                ["email", "string", "Email", "required"],
+                ["status", "integer", "Status", "required"]
+            ]
+        }
+    ]
+}
