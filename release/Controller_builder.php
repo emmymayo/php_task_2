@@ -17,7 +17,7 @@ class Controller_builder implements BuilderInterface{
         foreach($this->config['model'] as $model){
             $this->makeController($model);   
         }
-        $this->makeViewFile();
+        $this->saveController();
     }
 
     protected function makeController($model){
@@ -34,13 +34,12 @@ class Controller_builder implements BuilderInterface{
          $this->content .= "\$id = R::store('$lowercase_model_name');
         });".PHP_EOL;
 
-         // make Controller
          
     }
 
-    protected function makeViewFile(){
+    protected function saveController(){
         $root_path = $_SERVER['DOCUMENT_ROOT'];
-         $file = "$root_path/release/controller.php";
+        $file = "$root_path/release/controller.php";
          
          file_put_contents($file, $this->content);
     }

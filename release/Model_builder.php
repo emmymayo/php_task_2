@@ -68,29 +68,7 @@ class Model_builder implements BuilderInterface{
         file_put_contents($file, $this->content);
     }
 
-    private function getInputType(string $value) :string{
-        $type = '';
-        switch ($value) {
-            case 'integer':
-                $type = 'number';
-                break;
-            case 'string':
-                $type = 'text';
-                break;
-            
-            default:
-                break;
-        }
-
-        return $type;
-    }
-    private function getInputValidationRule($value) :bool{
-        return $value == 'required'? true : false;
-    }
-
     protected function makeModel($model){
-       
-        // capitalize first letter
         $model_name = ucfirst($model['name']);
         $content = "
         <?php
@@ -101,7 +79,6 @@ class Model_builder implements BuilderInterface{
         foreach ($model['field'] as $field) {
             $name = $field[0];
             $type = $field[1];
-            $label = $field[2];
             $rule = $field[3];
             if($rule == 'required'){
                 $content .= "
@@ -136,5 +113,25 @@ class Model_builder implements BuilderInterface{
             mkdir("$root_path/release/models");
           }
         file_put_contents($file, $content);
+    }
+
+    private function getInputType(string $value) :string{
+        $type = '';
+        switch ($value) {
+            case 'integer':
+                $type = 'number';
+                break;
+            case 'string':
+                $type = 'text';
+                break;
+            
+            default:
+                break;
+        }
+
+        return $type;
+    }
+    private function getInputValidationRule($value) :bool{
+        return $value == 'required'? true : false;
     }
 }
