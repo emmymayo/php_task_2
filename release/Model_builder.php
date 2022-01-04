@@ -1,6 +1,6 @@
 <?php
-// make an interface for the Model builder
-class Model_builder{
+require_once 'BuilderInterface.php';
+class Model_builder implements BuilderInterface{
 
     private $config;
 
@@ -77,12 +77,7 @@ class Model_builder{
     }
 
     protected function makeModel($model){
-        foreach ($model['field'] as $field) {
-            $name = $field[0];
-            $type = $field[1];
-            $label = $field[2];
-            $rule = $field[3];
-        }
+       
         // capitalize first letter
         $model_name = ucfirst($model['name']);
         $content = "
